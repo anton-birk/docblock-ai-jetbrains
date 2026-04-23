@@ -1,0 +1,37 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.docblockai.docblock-ai</id>
+    <name>DocBlock AI</name>
+    <vendor url="https://github.com/AntonBerestov/docblock-ai">Anton Berestov</vendor>
+
+    <description><![CDATA[
+        Generate AI-powered documentation comments for the selected code using OpenAI or Anthropic Claude.<br>
+        Supports PHPDoc, JSDoc, TSDoc, Javadoc, KDoc, Google-style Python docstrings, GoDoc, YARD, Rust doc comments,
+        and XML doc comments (C#).<br><br>
+        Select a function, method, class, or variable → right-click → <b>Generate DocBlock</b>
+        (or use <b>Alt+Insert → Generate DocBlock</b>).<br>
+        Configure your API key and preferred provider in <b>Settings → Tools → DocBlock AI</b>.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.docblockai.settings.DocBlockSettings"/>
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.docblockai.settings.DocBlockSettingsConfigurable"
+            id="com.docblockai.settings.DocBlockSettingsConfigurable"
+            displayName="DocBlock AI"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="DocBlockAI.GenerateDoc"
+            class="com.docblockai.actions.GenerateDocAction"
+            text="Generate DocBlock"
+            description="Generate AI documentation for the selected code element">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
