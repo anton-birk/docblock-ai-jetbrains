@@ -9,11 +9,18 @@ class DocBlockSettingsConfigurable : Configurable {
 
     private var panel: JPanel? = null
 
+    // API keys as last loaded from PasswordSafe, so isModified() doesn't hit the credential store.
+    private var savedOpenaiKey = ""
+    private var savedClaudeKey = ""
+
     private val providerCombo = JComboBox(arrayOf("openai", "claude"))
     private val openaiKeyField = JPasswordField(40)
-    private val openaiModelCombo = JComboBox(arrayOf("gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"))
+    private val openaiModelCombo = JComboBox(DocBlockSettings.OPENAI_MODELS.toTypedArray())
     private val claudeKeyField = JPasswordField(40)
-    private val claudeModelCombo = JComboBox(arrayOf("claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"))
+    private val claudeModelCombo = JComboBox(arrayOf(
+        "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1",
+        "claude-opus-4-7", "claude-sonnet-4-6",
+    ))
     private val languageCombo = JComboBox(arrayOf(
         "English", "Russian", "Spanish", "Italian", "French",
         "German", "Portuguese", "Polish", "Chinese", "Japanese",
@@ -40,29 +47,35 @@ class DocBlockSettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val s = DocBlockSettings.getInstance().state
         return providerCombo.selectedItem != s.provider
-            || String(openaiKeyField.password) != s.openaiApiKey
+            || String(openaiKeyField.password) != savedOpenaiKey
             || openaiModelCombo.selectedItem != s.openaiModel
-            || String(claudeKeyField.password) != s.claudeApiKey
+            || String(claudeKeyField.password) != savedClaudeKey
             || claudeModelCombo.selectedItem != s.claudeModel
             || languageCombo.selectedItem != s.language
     }
 
     override fun apply() {
-        val s = DocBlockSettings.getInstance().state
+        val settings = DocBlockSettings.getInstance()
+        val s = settings.state
         s.provider = providerCombo.selectedItem as String
-        s.openaiApiKey = String(openaiKeyField.password)
+        savedOpenaiKey = String(openaiKeyField.password)
+        settings.openaiApiKey = savedOpenaiKey
         s.openaiModel = openaiModelCombo.selectedItem as String
-        s.claudeApiKey = String(claudeKeyField.password)
+        savedClaudeKey = String(claudeKeyField.password)
+        settings.claudeApiKey = savedClaudeKey
         s.claudeModel = claudeModelCombo.selectedItem as String
         s.language = languageCombo.selectedItem as String
     }
 
     override fun reset() {
-        val s = DocBlockSettings.getInstance().state
+        val settings = DocBlockSettings.getInstance()
+        val s = settings.state
+        savedOpenaiKey = settings.openaiApiKey
+        savedClaudeKey = settings.claudeApiKey
         providerCombo.selectedItem = s.provider
-        openaiKeyField.text = s.openaiApiKey
+        openaiKeyField.text = savedOpenaiKey
         openaiModelCombo.selectedItem = s.openaiModel
-        claudeKeyField.text = s.claudeApiKey
+        claudeKeyField.text = savedClaudeKey
         claudeModelCombo.selectedItem = s.claudeModel
         languageCombo.selectedItem = s.language
     }

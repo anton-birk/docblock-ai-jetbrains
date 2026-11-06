@@ -5,6 +5,7 @@ import com.docblockai.api.OpenAiClient
 import com.docblockai.buildPrompt
 import com.docblockai.resolveLanguage
 import com.docblockai.settings.DocBlockSettings
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -71,10 +72,11 @@ class GenerateDocAction : AnAction() {
             override fun run(indicator: ProgressIndicator) {
                 indicator.isIndeterminate = true
 
+                val settings = DocBlockSettings.getInstance()
                 val raw = try {
                     when (state.provider) {
-                        "claude" -> ClaudeClient.generate(state.claudeApiKey, state.claudeModel, prompt)
-                        else -> OpenAiClient.generate(state.openaiApiKey, state.openaiModel, prompt)
+                        "claude" -> ClaudeClient.generate(settings.claudeApiKey, state.claudeModel, prompt)
+                        else -> OpenAiClient.generate(settings.openaiApiKey, state.openaiModel, prompt)
                     }
                 } catch (ex: Exception) {
                     ui { Messages.showErrorDialog(project, ex.message ?: "Unknown error", "DocBlock AI") }
@@ -99,6 +101,8 @@ class GenerateDocAction : AnAction() {
             }
         })
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR)

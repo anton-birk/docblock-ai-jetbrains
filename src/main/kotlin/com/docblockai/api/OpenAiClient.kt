@@ -6,10 +6,13 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
 
 object OpenAiClient {
 
-    private val http: HttpClient = HttpClient.newHttpClient()
+    private val http: HttpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(15))
+        .build()
     private val gson = Gson()
 
     fun generate(apiKey: String, model: String, prompt: String): String? {
@@ -28,6 +31,7 @@ object OpenAiClient {
             .uri(URI.create("https://api.openai.com/v1/chat/completions"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $apiKey")
+            .timeout(Duration.ofSeconds(90))
             .POST(HttpRequest.BodyPublishers.ofString(body))
             .build()
 
