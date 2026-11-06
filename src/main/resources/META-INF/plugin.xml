@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>com.docblockai.docblock-ai</id>
     <name>DocBlock AI</name>
-    <vendor url="https://github.com/AntonBerestov/docblock-ai">Anton Berestov</vendor>
+    <vendor url="https://github.com/anton-birk/docblock-ai-jetbrains">Anton Birk</vendor>
 
     <description><![CDATA[
         Generate AI-powered documentation comments for the selected code using OpenAI or Anthropic Claude.<br>
